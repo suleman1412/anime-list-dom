@@ -15,7 +15,6 @@ async function getTopAnime(page) {
             extracted_anime[id] = [name, image, genres, url, id];
         });
 
-        await new Promise(res => setTimeout(res, 3000))
 
         return extracted_anime;
         
