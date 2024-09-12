@@ -6,7 +6,7 @@ console.log(animeId);
 
 function createAnimeDetailsComponent(animeData) {
     return `
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-white">
             <div class="md:col-span-1 space-y-6">
                 <div class="bg-gray-800 p-4 rounded-lg h-auto flex items-center justify-center overflow-hidden">
                     <img src="${animeData.large_image_webp}" alt="${animeData.animeName}" class="w-full h-full object-cover">
