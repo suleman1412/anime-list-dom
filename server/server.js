@@ -1,20 +1,20 @@
 const express = require('express');
 const cors = require('cors');
-const { getTopAnime, getSynopsis } = require('./utils');
+const { getTopAnime, getSynopsis, searchAnime } = require('./utils');
 
 const app = express();
 
 app.use(cors());
 app.use(express.json());
 
-app.get('/api/topAnime', async (req, res) => { // Get top Anime, also the landing page
+app.get('/api/topAnime', async (req, res) => { // Get top Anime
     try {
-        const page = (req.query.page)
-        // console.log('In server.js, Command passed to getTopAnime() in utils, page =', page)
+        const page = req.query.page
         const animeData = await getTopAnime(page);
+        console.log('In server.js, received data from getTopAnime() on page = ', animeData.currentpage)
         res.send(animeData);
     } catch (error) {
-        console.error('Error fetching anime data:', error);
+        console.log('Error in /api/topAnime endpoint');
         res.status(500).json({ error: 'Internal Server Error' });
     }
 });
@@ -26,11 +26,26 @@ app.get('/api/AnimeInfo/:id', async (req, res) => {
         const synopsisData = await getSynopsis(id);
         res.send(synopsisData)
     }catch(e){
-        console.error(e)
-        res.status(500).json({error: 'Internal Servar Error'})
+        console.log('Error in /api/AnimeInfo endpoint')
+        res.status(500).json({error: e})
     }
-
 })
+
+app.get('/api/searchAnime', async(req, res) => {
+    try{
+        const name = req.query.name;
+        const animeData = await searchAnime(name);
+        console.log('Sending over search results to frontend')
+        const isNamePresent = animeData.animeinfo.filter(anime => anime.name.toLowerCase() == name.toLowerCase());
+        console.log('Sending over search results to frontend');
+
+        res.send(animeData);
+    } catch(e){
+        console.log('Error in /api/searchAnime endpoint')
+        res.status(500).json({error: e})
+    }
+})
+
 
 
 
