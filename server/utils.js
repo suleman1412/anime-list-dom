@@ -13,8 +13,11 @@ async function getTopAnime(page = 1) {
 
             extracted_anime.push({name: name, image: image, genres: genres, url: url, id: id});
         });
-        return { animeinfo: extracted_anime, lastPage: res.data.pagination.last_visible_page }; // Return lastPage for further requests
-
+        if (extracted_anime.length > 1){
+            return { animeinfo: extracted_anime, lastPage: res.data.pagination.last_visible_page }; // Return lastPage for further requests
+        } else{
+            return;
+        }
     } catch (error) {
         console.error('Error fetching top anime:', error);
         return null;
@@ -62,7 +65,11 @@ async function searchAnime(name){
 
             extracted_anime.push({name: name, image: image, genres: genres, url: url, id: id});
         });
-        return { animeinfo: extracted_anime, lastPage: response.data.pagination.last_visible_page }; // Return lastPage for further requests
+        if (extracted_anime.length > 1){
+            return { animeinfo: extracted_anime, lastPage: response.data.pagination.last_visible_page }; // Return lastPage for further requests
+        } else{
+            return;
+        }
 
     } catch (error) {
         console.error('Error fetching top anime:', error);
