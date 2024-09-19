@@ -1,8 +1,22 @@
+import navBar from "../components/navBar.js";
+import footer from "../components/footer.js";
+
 const url = window.location.href;
 const match = url.match(/[?&]id=([^&]+)/);
 const animeId = match ? match[1] : null;
 
 console.log(animeId);
+
+document.addEventListener('DOMContentLoaded', () => {
+    document.body.insertAdjacentHTML('afterbegin', navBar());
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+    document.body.insertAdjacentHTML('beforeend', footer());
+});
+
+document.addEventListener('DOMContentLoaded',RenderAnimeDetails)
+
 
 function createAnimeDetailsComponent(animeData) {
     return `
@@ -62,4 +76,3 @@ async function RenderAnimeDetails() {
         document.getElementById('animeDetails').innerHTML = '<p class="text-red-500">Error loading anime details. Please try again later.</p>';
     }
 }
-RenderAnimeDetails()

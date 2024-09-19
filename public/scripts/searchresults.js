@@ -1,3 +1,7 @@
+import navBar from "../components/navBar.js";
+import footer from "../components/footer.js";
+import {createAnimeCard, closePopup, createPopup, openPopup, sendData} from "../components/createAnimeCard.js";
+
 let isLoading = false;
 let page = 1;
 let lastPageReached = false;
@@ -7,25 +11,17 @@ const animeName = match ? decodeURIComponent(match[1]) : null; // Decode the sea
 
 console.log(animeName);
 
-function createAnimeCard(anime) {
-    return `
-    <div class="anime-card bg-gray-800 rounded-lg shadow-md overflow-hidden w-30 h-30 relative group cursor-pointer" anime-data="${anime.id}">
-        <div class="relative z-10">
-            <img src="${anime.image}" alt="${anime.name}" class="w-full h-48 object-cover">
-            <div class="p-4">
-                <h2 class="text-xl font-semibold mb-2 text-white">
-                    <a href="../pages/details.html?id=${anime.id}" class="hover:text-blue-600">
-                        ${anime.name}
-                    </a>
-                </h2>
-                <p class="text-gray-600">${anime.genres.join(', ')}</p>
-            </div>
-        </div>
-    </div>
-    `;
-}
+document.addEventListener('DOMContentLoaded', () => {
+    document.body.insertAdjacentHTML('afterbegin', navBar());
+});
 
+document.addEventListener('DOMContentLoaded', () => {
+    document.body.insertAdjacentHTML('beforeend', footer());
+});
 
+window.closePopup = closePopup;
+window.openPopup = openPopup;
+window.sendData = sendData;
 async function RenderSearches() {
     if (isLoading || lastPageReached) return;  // Prevent further calls if loading or last page reached
     isLoading = true;
@@ -35,6 +31,7 @@ async function RenderSearches() {
         if (!response.ok) {
             throw new Error('Network response was not ok');
         }
+        console.log(response)
         const { animeinfo, lastPage } = await response.json(); // Destructure the response
 
         const animeList = document.getElementById('animeList');
@@ -43,7 +40,6 @@ async function RenderSearches() {
             animeList.insertAdjacentHTML('beforeend', animeCard);
         }
 
-        console.log(`Fetched page ${page} of ${lastPage}`); // Log current page and last page
         isLoading = false;
 
         if (page < lastPage) {
