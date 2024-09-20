@@ -9,6 +9,7 @@ const User = new Schema({
 });
 
 const Anime = new Schema({
+    userId: {type: String, required: true},
     name: {type: String, required: true},
     id: {type: Number, required: true},
     status: {type: String, required: true},
