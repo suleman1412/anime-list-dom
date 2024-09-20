@@ -58,13 +58,17 @@ export function createPopup(){
 
 
 export function openPopup(animeName, animeId) {
-    document.getElementById('popupTitle').innerHTML = 
-    `
-        <h1>${animeName}</h1>
-        <input value=${animeId} type="hidden">
-    `;
-    document.getElementById('popup').classList.remove('hidden'); 
-    document.getElementById('popup').classList.add('show'); 
+    if(localStorage.getItem('token')){
+        document.getElementById('popupTitle').innerHTML = 
+        `
+            <h1>${animeName}</h1>
+            <input value=${animeId} type="hidden">
+        `;
+        document.getElementById('popup').classList.remove('hidden'); 
+        document.getElementById('popup').classList.add('show');
+    } else{
+        alert("Please log in to add items to your list.")
+    }
 }
 
 export function closePopup() {
@@ -80,6 +84,7 @@ export function sendData(event) {
     const anime = document.getElementById('popupTitle')
     const name = anime.querySelector('h1').innerText
     const id = Number(anime.querySelector('input').value)
+    const token = localStorage.getItem('token')
     // Create the data object to send
     const data = {
         name: name,
@@ -88,11 +93,13 @@ export function sendData(event) {
         episodesWatched: episodesWatched,
         rating: rating
     };
+    console.log(data)
     // Send the data to the server
     fetch('http://localhost:3000/api/sendData', {
         method: 'POST',
         headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify(data) 
     })
