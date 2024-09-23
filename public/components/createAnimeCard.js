@@ -14,7 +14,7 @@ export function createAnimeCard(anime) {
                     <p class="text-gray-600">${anime.genres.join(', ')}</p>
                 </div>
                 <div class="ml-4 "> 
-                    <label for "animeForm" class=" cursor-pointer bg-blue-700 text-white px-4 py-2 rounded" onclick="openPopup('${anime.name}', '${anime.id}')">Add</label>
+                    <label for "animeForm" class=" cursor-pointer bg-blue-700 text-white px-4 py-2 rounded" onclick="openPopup('${anime.name}', '${anime.id}', '${anime.image}')">Add</label>
                     <!-- Popup -->
                     ${createPopup()}
                 </div>
@@ -57,12 +57,13 @@ export function createPopup(){
 
 
 
-export function openPopup(animeName, animeId) {
+export function openPopup(animeName, animeId, animeImg) {
     if(localStorage.getItem('token')){
         document.getElementById('popupTitle').innerHTML = 
         `
             <h1>${animeName}</h1>
             <input value=${animeId} type="hidden">
+            <img src="${animeImg}" style="display:none;">
         `;
         document.getElementById('popup').classList.remove('hidden'); 
         document.getElementById('popup').classList.add('show');
@@ -81,13 +82,15 @@ export function sendData(event) {
     const status = document.getElementById('status').value;
     const episodesWatched = document.getElementById('episodesWatched').value;
     const rating = document.getElementById('Rating').value;
-    const anime = document.getElementById('popupTitle')
-    const name = anime.querySelector('h1').innerText
-    const id = Number(anime.querySelector('input').value)
-    const token = localStorage.getItem('token')
+    const anime = document.getElementById('popupTitle');
+    const name = anime.querySelector('h1').innerText;
+    const id = Number(anime.querySelector('input').value);
+    const animeImg = anime.querySelector('img').src;
+    const token = localStorage.getItem('token');
     // Create the data object to send
     const data = {
         name: name,
+        img: animeImg,
         id: id,
         status: status,
         episodesWatched: episodesWatched,
