@@ -1,3 +1,14 @@
+import navBar from "../components/navBar.js";
+import footer from "../components/footer.js";
+
+
+document.addEventListener('DOMContentLoaded', () => {
+    document.body.insertAdjacentHTML('afterbegin', navBar());
+})
+
+document.addEventListener('DOMContentLoaded', () => {
+    document.body.insertAdjacentHTML('beforeend', footer());
+})
 
 document.getElementById('searchInput').addEventListener('keypress', function(event) {
     if (event.key === 'Enter') {

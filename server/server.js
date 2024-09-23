@@ -1,53 +1,89 @@
 const express = require('express');
 const cors = require('cors');
-const { getTopAnime, getSynopsis, searchAnime } = require('./utils');
+const mongoose = require('mongoose')
+const bcrypt = require('bcrypt')
+const { UserModel } = require('../public/db/db')
+const jwt = require('jsonwebtoken')
+const {apiRouter} = require('./api')
+
 
 const app = express();
-
+const dbConnect = process.env.DB_CONNECT;
+const JWT_SECRET = process.env.JWT_SECRET; 
 app.use(cors());
 app.use(express.json());
+app.use('/api', apiRouter)
+mongoose.connect(dbConnect)
 
-app.get('/api/topAnime', async (req, res) => { // Get top Anime
+
+
+
+
+app.post('/signup', async (req, res) => {
+    console.log("New user signup!");
+    const name = req.body.name;
+    const password = req.body.password;
+    
     try {
-        const page = req.query.page
-        const animeData = await getTopAnime(page);
-        console.log('In server.js, received data from getTopAnime() on page = ', animeData.currentpage)
-        res.send(animeData);
-    } catch (error) {
-        console.log('Error in /api/topAnime endpoint');
-        res.status(500).json({ error: 'Internal Server Error' });
+        const hash = await bcrypt.hash(password, 5); 
+
+        await UserModel.create({
+            name: name,
+            password: hash
+        });
+
+        res.status(200).json({
+            message: "<h3>You are signed up, please continue to the login page</h3>"
+        });
+    } catch (e) {
+        if(e.code === 11000){
+            return res.status(400).json({
+                message: "Username taken, please try a different one."
+            })
+        }
+        console.error('Error during signup:', e); 
+        res.status(500).json({
+            message: "Error signing up"
+        });
     }
 });
 
-app.get('/api/AnimeInfo/:id', async (req, res) => {
-    try{
-        const id = req.params.id;
-        console.log('Command passed to getSynopsis() in utils')
-        const synopsisData = await getSynopsis(id);
-        res.send(synopsisData)
-    }catch(e){
-        console.log('Error in /api/AnimeInfo endpoint')
-        res.status(500).json({error: e})
+app.post('/login', async (req, res) => {
+    console.log("User Login!");
+    const name = req.body.name;
+    const password = req.body.password;
+
+    try {
+        const response = await UserModel.findOne({ name: name });
+        
+        if (!response) {
+            return res.status(403).json({
+                message: "User doesn't exist, please sign up"
+            });
+        }
+        
+        const passwordMatch = await bcrypt.compare(password, response.password);
+        if (passwordMatch) {
+            const token = jwt.sign({
+                userId: response._id.toString(),
+                username: response.name 
+            }, JWT_SECRET); 
+
+            return res.json({
+                token
+            });
+        } else {
+            return res.status(403).json({
+                message: "Incorrect credentials"
+            });
+        }
+    } catch (e) {
+        console.error('Error during login:', e); 
+        return res.status(500).json({
+            message: "Internal server error"
+        });
     }
-})
-
-app.get('/api/searchAnime', async(req, res) => {
-    try{
-        const name = req.query.name;
-        const animeData = await searchAnime(name);
-        console.log('Sending over search results to frontend')
-        const isNamePresent = animeData.animeinfo.filter(anime => anime.name.toLowerCase() == name.toLowerCase());
-        console.log('Sending over search results to frontend');
-
-        res.send(animeData);
-    } catch(e){
-        console.log('Error in /api/searchAnime endpoint')
-        res.status(500).json({error: e})
-    }
-})
-
-
-
+});
 
 
 const PORT = 3000;
