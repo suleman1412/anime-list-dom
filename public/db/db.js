@@ -1,7 +1,6 @@
 const mongoose = require('mongoose');
 
 const Schema = mongoose.Schema;
-const ObjectId = mongoose.ObjectId;
 
 const User = new Schema({
     name: {type: String, required: true, unique:true},
@@ -11,6 +10,7 @@ const User = new Schema({
 const Anime = new Schema({
     userId: {type: String, required: true},
     name: {type: String, required: true},
+    image: {type: String, required: true},
     id: {type: Number, required: true},
     status: {type: String, required: true},
     episodesWatched : {type: Number},
